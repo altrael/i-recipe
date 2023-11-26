@@ -1,0 +1,51 @@
+{
+  "name": "i-recipe",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:unit": "vitest",
+    "test:e2e": "start-server-and-test preview http://localhost:4173 'cypress run --e2e'",
+    "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "format": "prettier --write src/",
+    "generate-pwa-assets": "pwa-assets-generator"
+  },
+  "dependencies": {
+    "@vueuse/components": "^10.6.1",
+    "@vueuse/core": "^10.6.1",
+    "axios": "^1.6.2",
+    "pinia": "^2.1.7",
+    "vue": "^3.3.9",
+    "vue-router": "^4.2.5",
+    "workbox-background-sync": "^7.0.0",
+    "workbox-core": "^7.0.0",
+    "workbox-precaching": "^7.0.0",
+    "workbox-routing": "^7.0.0",
+    "workbox-strategies": "^7.0.0",
+    "workbox-window": "^7.0.0"
+  },
+  "devDependencies": {
+    "@rushstack/eslint-patch": "^1.6.0",
+    "@vite-pwa/assets-generator": "^0.0.11",
+    "@vitejs/plugin-vue": "^4.5.0",
+    "@vue/eslint-config-prettier": "^8.0.0",
+    "@vue/test-utils": "^2.4.2",
+    "autoprefixer": "^10.4.16",
+    "cypress": "^13.6.0",
+    "daisyui": "^4.4.7",
+    "eslint": "^8.54.0",
+    "eslint-plugin-cypress": "^2.15.1",
+    "eslint-plugin-vue": "^9.18.1",
+    "jsdom": "^22.1.0",
+    "postcss": "^8.4.31",
+    "prettier": "^3.1.0",
+    "start-server-and-test": "^2.0.3",
+    "tailwindcss": "^3.3.5",
+    "vite": "^4.5.0",
+    "vite-plugin-pwa": "^0.17.0",
+    "vitest": "^0.34.6"
+  }
+}
