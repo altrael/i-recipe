@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import ListRecipe from './recipe/ListRecipe.vue'
 import EmptyRecipe from './recipe/EmptyRecipe.vue'
 
@@ -21,11 +21,10 @@ const data = ref(null)
 
 onMounted(async () => {
   // Fetch data from an API (replace URL with your API endpoint)
-  const response = await fetch('https://jsonplaceholder.typicode.com/todos/1')
-  const result = await response.json()
+  const response = await fetch('https://65571769bd4bcef8b6120891.mockapi.io/api/v1/recipes')
 
   // Set the fetched data
-  data.value = result
+  data.value = await response.json()
   data.value = null
 })
 </script>

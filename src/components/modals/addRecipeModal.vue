@@ -9,6 +9,7 @@
       <div>
         <label class="mb-2">Input Recipe Name</label>
         <input
+          v-model="recipeName"
           class="input input-bordered input-sm w-full max-w-xs"
           type="text"
           placeholder="Recipe Name"
@@ -69,7 +70,7 @@
           method="dialog"
           class="flex flex-col xs:place-content-center xs:items-center xs:space-y-2 md:flex-row md:space-x-2"
         >
-          <button class="btn btn-outline btn-success xs:w-full">Submit</button>
+          <button class="btn btn-outline btn-success xs:w-full" @click="onSubmit">Submit</button>
           <button class="btn btn-neutral xs:w-full">Close</button>
         </form>
       </div>
@@ -78,12 +79,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-const inputs = ref([])
+import { reactive, ref } from 'vue'
+const inputs = reactive([])
 const selectedInputType = ref('text')
+const recipeName = ref('')
 
 const addInput = () => {
-  inputs.value.push({
+  inputs.push({
     type: selectedInputType.value,
     value: '',
     label: `${
@@ -94,14 +96,44 @@ const addInput = () => {
 }
 
 const updateInputType = (index) => {
-  inputs.value[index].type = selectedInputType.value
-  inputs.value[index].label = `${
+  inputs[index].type = selectedInputType.value
+  inputs[index].label = `${
     selectedInputType.value.charAt(0).toUpperCase() + selectedInputType.value.slice(1)
   } Input`
-  inputs.value[index].placeholder = `Enter ${selectedInputType.value}`
+  inputs[index].placeholder = `Enter ${selectedInputType.value}`
 }
 
 const removeInput = (index) => {
-  inputs.value.splice(index, 1)
+  inputs.splice(index, 1)
 }
+
+const onSubmit = async () => {
+  const url = import.meta.env.VITE_API_MOCKAPI + '/recipes'
+
+  const datas = {
+    recipe_name: recipeName.value,
+    details: inputs.map((d) => {
+      return {
+        type: d.type,
+        value: d.value
+      }
+    })
+  }
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(datas)
+  })
+
+  if (response.ok) {
+    console.log('Success Add Data')
+  } else {
+    console.log('Failed Add Data')
+  }
+
+}
+
 </script>
