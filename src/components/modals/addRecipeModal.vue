@@ -45,6 +45,7 @@
               @change="handleFileChange(index, $event)"
             />
             <button class="btn btn-outline">Take Picture</button>
+            <img :src="imageUrl[index]" v-if="imageUrl[index]" alt="Uploaded Image" />
           </template>
 
           <div class="flex space-x-2 mt-2">
@@ -148,6 +149,7 @@ const onSubmit = async () => {
 const dbName = "iRecipeDB";
 const tableName = "recipeImages";
 const file = ref([]);
+const imageUrl = ref([]);
 
 const handleFileChange = (index, event) => {
   file.value = event.target.files[0];
@@ -158,6 +160,7 @@ const storeAndSetImage = (index) => {
   const reader = new FileReader();
 
   reader.onload = (e) => {
+      imageUrl.value[index] = URL.createObjectURL(file.value);
       saveImageToIndexedDB(index, e.target.result);
   };
 
