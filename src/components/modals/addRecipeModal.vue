@@ -113,6 +113,7 @@ const updateInputType = (index) => {
 
 const removeInput = (index) => {
   inputs.splice(index, 1)
+  deleteImg(index)
 }
 
 const onSubmit = async () => {
@@ -190,6 +191,42 @@ const saveImageToIndexedDB = (index, blob) => {
       transaction.oncomplete = () => {
           db.close();
       };
+  };
+}
+
+
+const deleteImg = (index) => {
+  const request = indexedDB.open(dbName, 1);
+
+  request.onerror = (event) => {
+    console.error("Error opening database:", event.target.error);
+  };
+
+  request.onsuccess = (event) => {
+    const db = event.target.result;
+
+    const deleteTransaction = db.transaction(tableName, "readwrite");
+    const deleteObjectStore = deleteTransaction.objectStore(tableName);
+
+    const deleteRequest = deleteObjectStore.delete(index);
+
+    deleteRequest.onsuccess = (event) => {
+      console.log("Data deleted successfully");
+    };
+
+    deleteRequest.onsuccess = (event) => {
+      console.log("Data deleted successfully");
+    };
+
+    deleteRequest.onerror = (event) => {
+      console.error("Error deleting data", event.target.error);
+    };
+
+    deleteTransaction.oncomplete = () => {
+      console.log("Delete transaction completed");
+      db.close();
+      imageUrl.value[index] = null
+    };
   };
 }
 
