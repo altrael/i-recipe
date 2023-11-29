@@ -14,7 +14,9 @@
           type="text"
           placeholder="Recipe Name"
         />
+
         <div v-for="(input, index) in inputs" :key="index" class="mt-4">
+
           <template v-if="input.type === 'text'">
             <label class="mb-2">Step {{ index + 1 }}</label>
             <input
@@ -24,6 +26,7 @@
               :placeholder="input.placeholder"
             />
           </template>
+
           <template v-else-if="input.type === 'textarea'">
             <label class="mb-2">Description</label>
             <textarea
@@ -32,19 +35,23 @@
               :placeholder="input.placeholder"
             ></textarea>
           </template>
+          
           <template v-else-if="input.type === 'file'">
             <label class="mb-2">Add Images</label>
             <input
               class="file-input file-input-bordered file-input-error file-input-sm w-full max-w-xs"
               type="file"
-              @change="handleFileChange(index)"
+              accept="image/*"
+              @change="handleFileChange(index, $event)"
             />
             <button class="btn btn-outline">Take Picture</button>
           </template>
+
           <div class="flex space-x-2 mt-2">
             <button @click="updateInputType(index)" class="btn btn-primary btn-sm">Update</button>
             <button @click="removeInput(index)" class="btn btn-danger btn-sm">Remove</button>
           </div>
+          
         </div>
 
         <div class="mt-4">
@@ -134,6 +141,53 @@ const onSubmit = async () => {
     console.log('Failed Add Data')
   }
 
+}
+
+
+// image store into IndexedDB usecase
+const dbName = "iRecipeDB";
+const tableName = "recipeImages";
+const file = ref([]);
+
+const handleFileChange = (index, event) => {
+  file.value = event.target.files[0];
+  storeAndSetImage(index)
+}
+
+const storeAndSetImage = (index) => {
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+      saveImageToIndexedDB(index, e.target.result);
+  };
+
+  reader.readAsArrayBuffer(file.value);
+}
+
+const saveImageToIndexedDB = (index, blob) => {
+  const request = indexedDB.open(dbName, 1);
+
+  request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      const objectStore = db.createObjectStore(tableName, { keyPath: "id" });
+  };
+
+  request.onsuccess = (event) => {
+      const imgToAdd = { id: index, image: blob };
+
+      const db = event.target.result;
+      const transaction = db.transaction([tableName], "readwrite");
+      const objectStore = transaction.objectStore(tableName);
+      const addRequest = objectStore.put(imgToAdd);
+
+      addRequest.onsuccess = () => {
+          console.log("Successfully to add Image to IndexedDB");
+      };
+
+      transaction.oncomplete = () => {
+          db.close();
+      };
+  };
 }
 
 </script>
