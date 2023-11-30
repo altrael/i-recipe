@@ -1,42 +1,61 @@
 <template>
   <div>
-    <div>
-      <UseGeolocation v-slot="{ coords: { latitude, longitude } }">
-        Latitude: {{ latitude }} Longitude: {{ longitude }}
-      </UseGeolocation>
-    </div>
+    <!-- Print Location and Weather -->
+    <p v-if="location">{{ location }}</p>
   </div>
 </template>
+
 <script setup>
 import { useGeolocation } from '@vueuse/core'
-import { UseGeolocation } from '@vueuse/components'
-import { ref, onMounted } from 'vue'
+import { ref, watchEffect } from 'vue'
+
 const { coords } = useGeolocation()
-
 const location = ref(null)
-const apiKey = '3af542017b67c1d012d168883c257541'
+const apiKey = import.meta.env.VITE_OPEN_WEATHER_CREDENTIAL
+const geoUrl = import.meta.env.VITE_OPEN_WEATHER_GEOAPI
+const prevLatitude = ref()
+const prevLongitude = ref()
 
-const fetchLocation = async (latitude, longitude) => {
-  try {
-    const response = await fetch(
-      `//api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${apiKey}`
-    )
+watchEffect(() => {
+  const fetchLocation = async (latitude, longitude) => {
+    try {
+      if (latitude !== undefined && longitude !== undefined) {
+        // Fetch location data
+        const locationResponse = await fetch(
+          `${geoUrl}lat=${latitude}&lon=${longitude}&limit=1&appid=${apiKey}`
+        )
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch location data')
+        if (!locationResponse.ok) {
+          throw new Error('Failed to fetch location data')
+        }
+
+        const locationData = await locationResponse.json()
+        const cityName = locationData[0]?.name || 'Unknown Location'
+        location.value = cityName
+
+        // Save the fetched location data to Workbox cache
+        const locationCache = await caches.open('openweathermap-geo-cache')
+        const locationCacheKey = new Request('/api/location')
+        const locationCacheResponse = new Response(JSON.stringify(locationData))
+        await locationCache.put(locationCacheKey, locationCacheResponse)
+      } else {
+        console.error('Latitude or longitude is undefined.')
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error.message)
     }
-    console.log(response)
-    const data = await response.json()
-    const cityName = data[0]?.name || 'Unknown Location'
-    location.value = cityName
-  } catch (error) {
-    console.error('Error fetching location:', error.message)
   }
-}
 
-onMounted(() => {
-  if (coords) {
-    fetchLocation(coords.latitude, coords.longitude)
+  if (
+    (coords.value &&
+      coords.value.latitude !== undefined &&
+      coords.value.longitude !== undefined &&
+      prevLatitude.value != coords.value.latitude) ||
+    prevLongitude.value != coords.value.longitude
+  ) {
+    fetchLocation(coords.value.latitude, coords.value.longitude)
+    prevLatitude.value = coords.value.latitude
+    prevLongitude.value = coords.value.longitude
   }
 })
 </script>
