@@ -5,92 +5,120 @@
 
   <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box p-6 bg-white rounded-lg shadow-lg w-screen max-w-screen">
-      <h3 class="font-bold text-lg mb-4">New Recipe</h3>
-      <div>
-        <label class="mb-2">Input Recipe Name</label>
-        <input
-          v-model="recipeName"
-          class="input input-bordered input-sm w-full max-w-xs"
-          type="text"
-          placeholder="Recipe Name"
-        />
 
-        <div v-for="(input, index) in inputs" :key="index" class="mt-4">
-
-          <template v-if="input.type === 'text'">
-            <label class="mb-2">Step {{ index + 1 }}</label>
-            <input
-              class="input input-bordered input-sm w-full max-w-xs"
-              type="text"
-              v-model="input.value"
-              :placeholder="input.placeholder"
-            />
-          </template>
-
-          <template v-else-if="input.type === 'textarea'">
-            <label class="mb-2">Description</label>
-            <textarea
-              class="textarea textarea-bordered textarea-lg w-full max-w-xs"
-              v-model="input.value"
-              :placeholder="input.placeholder"
-            ></textarea>
-          </template>
-          
-          <template v-else-if="input.type === 'file'">
-            <label class="mb-2">Add Images</label>
-            <input
-              class="file-input file-input-bordered file-input-error file-input-sm w-full max-w-xs"
-              type="file"
-              accept="image/*"
-              @change="handleFileChange(index, $event)"
-            />
-            <button class="btn btn-outline">Take Picture</button>
-            <img :src="imageUrl[index]" v-if="imageUrl[index]" alt="Uploaded Image" />
-          </template>
-
-          <div class="flex space-x-2 mt-2">
-            <button @click="updateInputType(index)" class="btn btn-primary btn-sm">Update</button>
-            <button @click="removeInput(index)" class="btn btn-danger btn-sm">Remove</button>
+      <!-- CAMERA -->
+      <div class="text-center">
+        <div v-if="enabled && !capturedImage">
+          <video ref="video" muted autoplay controls class="h-100 w-auto" />
+        </div>
+        <div v-if="capturedImage">
+          <img :src="capturedImage" alt="Captured" />
+        </div>
+        <div v-if="enabled" class="mt-4">
+          <button class="btn btn-primary" @click="takePicture" :disabled="!enabled">{{ !capturedImage ? "Take Picture" : "Retake Picture" }}</button>
+          <div v-if="capturedImage" class="mt-2">
+            <button class="btn btn-success" @click="choosePicture">Choose Picture</button>
           </div>
-          
-        </div>
-
-        <div class="mt-4">
-          <label class="mb-2">Choose Input Type:</label>
-          <select
-            v-model="selectedInputType"
-            class="select select-bordered select-sm w-full max-w-xs"
-          >
-            <option value="text">Add Step</option>
-            <option value="textarea">Add Description</option>
-            <option value="file">Upload Image</option>
-          </select>
-          <button @click="addInput" class="btn btn-success">Add Input</button>
         </div>
       </div>
 
-      <p class="py-4">Press ESC key or click the button below to close</p>
+      <!-- FORM -->
+      <div v-if="!enabled">
+        <h3 class="font-bold text-lg mb-4">New Recipe</h3>
+        <div>
+          <label class="mb-2">Input Recipe Name</label>
+          <input
+            v-model="recipeName"
+            class="input input-bordered input-sm w-full max-w-xs"
+            type="text"
+            placeholder="Recipe Name"
+          />
 
-      <div
-        class="modal-action flex xs:items-center xs:place-content-center lg:items-end lg:place-content-end"
-      >
-        <form
-          method="dialog"
-          class="flex flex-col xs:place-content-center xs:items-center xs:space-y-2 md:flex-row md:space-x-2"
+          <div v-for="(input, index) in inputs" :key="index" class="mt-4">
+
+            <template v-if="input.type === 'text'">
+              <label class="mb-2">Step {{ index + 1 }}</label>
+              <input
+                class="input input-bordered input-sm w-full max-w-xs"
+                type="text"
+                v-model="input.value"
+                :placeholder="input.placeholder"
+              />
+            </template>
+
+            <template v-else-if="input.type === 'textarea'">
+              <label class="mb-2">Description</label>
+              <textarea
+                class="textarea textarea-bordered textarea-lg w-full max-w-xs"
+                v-model="input.value"
+                :placeholder="input.placeholder"
+              ></textarea>
+            </template>
+            
+            <template v-else-if="input.type === 'file'">
+              <label class="mb-2">Add Images</label>
+              <input
+                class="file-input file-input-bordered file-input-error file-input-sm w-full max-w-xs"
+                type="file"
+                accept="image/*"
+                @change="handleFileChange(index, $event)"
+              />
+              <button class="btn btn-outline" @click="handleOpenCamera(index)">Open Camera</button>
+              <img :src="imageUrl[index]" v-if="imageUrl[index]" alt="Uploaded Image" />
+            </template>
+
+            <div class="flex space-x-2 mt-2">
+              <button @click="updateInputType(index)" class="btn btn-primary btn-sm">Update</button>
+              <button @click="removeInput(index)" class="btn btn-danger btn-sm">Remove</button>
+            </div>
+            
+          </div>
+
+          <div class="mt-4">
+            <label class="mb-2">Choose Input Type:</label>
+            <select
+              v-model="selectedInputType"
+              class="select select-bordered select-sm w-full max-w-xs"
+            >
+              <option value="text">Add Step</option>
+              <option value="textarea">Add Description</option>
+              <option value="file">Upload Image</option>
+            </select>
+            <button @click="addInput" class="btn btn-success">Add Input</button>
+          </div>
+        </div>
+
+        <p class="py-4">Press ESC key or click the button below to close</p>
+
+        <div
+          class="modal-action flex xs:items-center xs:place-content-center lg:items-end lg:place-content-end"
         >
-          <button class="btn btn-outline btn-success xs:w-full" @click="onSubmit">Submit</button>
-          <button class="btn btn-neutral xs:w-full">Close</button>
-        </form>
+          <form
+            method="dialog"
+            class="flex flex-col xs:place-content-center xs:items-center xs:space-y-2 md:flex-row md:space-x-2"
+          >
+            <button class="btn btn-outline btn-success xs:w-full" @click="onSubmit">Submit</button>
+            <button class="btn btn-neutral xs:w-full">Close</button>
+          </form>
+        </div>
       </div>
+      
     </div>
   </dialog>
 </template>
 
+
 <script setup>
-import { reactive, ref } from 'vue'
+
+import { reactive, ref, watchEffect } from 'vue'
+import { useDevicesList, useUserMedia } from '@vueuse/core'
+import { base64ToBlob } from "./../../utils/helper";
+
+
 const inputs = reactive([])
 const selectedInputType = ref('text')
 const recipeName = ref('')
+const idx = ref(null);
 
 const addInput = () => {
   inputs.push({
@@ -194,7 +222,6 @@ const saveImageToIndexedDB = (index, blob) => {
   };
 }
 
-
 const deleteImg = (index) => {
   const request = indexedDB.open(dbName, 1);
 
@@ -229,5 +256,59 @@ const deleteImg = (index) => {
     };
   };
 }
+
+
+// open camera
+const currentCamera = ref('')
+const { videoInputs: cameras } = useDevicesList({
+  requestPermissions: true,
+  onUpdated() {
+    if (!cameras.value.find(i => i.deviceId === currentCamera.value))
+      currentCamera.value = cameras.value[0]?.deviceId
+  },
+})
+
+const video = ref()
+const { stream, enabled } = useUserMedia({
+  constraints: { video: { deviceId: currentCamera } },
+})
+
+const capturedImage = ref('')
+
+const takePicture = () => {
+  if (capturedImage.value) {
+    capturedImage.value = ''
+  } else {
+    const canvas = document.createElement('canvas');
+    canvas.width = video.value.videoWidth;
+    canvas.height = video.value.videoHeight;
+
+    const context = canvas.getContext('2d');
+    context.drawImage(video.value, 0, 0, canvas.width, canvas.height);
+
+    capturedImage.value = canvas.toDataURL('image/png');
+  }
+}
+
+const choosePicture = async () => {
+  file.value = await base64ToBlob(capturedImage.value)
+  storeAndSetImage(idx.value)
+  showOrHideCamera()
+}
+
+const handleOpenCamera = (index) => {
+  showOrHideCamera()
+  idx.value = index
+}
+
+const showOrHideCamera = () => {
+  enabled.value = !enabled.value
+  capturedImage.value = ''
+}
+
+watchEffect(() => {
+  if (video.value)
+    video.value.srcObject = stream.value
+})
 
 </script>
