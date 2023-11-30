@@ -109,10 +109,16 @@
 
 
 <script setup>
-import { reactive, ref } from 'vue'
+
+import { reactive, ref, watchEffect } from 'vue'
+import { useDevicesList, useUserMedia } from '@vueuse/core'
+import { base64ToBlob } from "./../../utils/helper";
+
+
 const inputs = reactive([])
 const selectedInputType = ref('text')
 const recipeName = ref('')
+const idx = ref(null);
 
 const addInput = () => {
   inputs.push({
@@ -250,5 +256,59 @@ const deleteImg = (index) => {
     };
   };
 }
+
+
+// open camera
+const currentCamera = ref('')
+const { videoInputs: cameras } = useDevicesList({
+  requestPermissions: true,
+  onUpdated() {
+    if (!cameras.value.find(i => i.deviceId === currentCamera.value))
+      currentCamera.value = cameras.value[0]?.deviceId
+  },
+})
+
+const video = ref()
+const { stream, enabled } = useUserMedia({
+  constraints: { video: { deviceId: currentCamera } },
+})
+
+const capturedImage = ref('')
+
+const takePicture = () => {
+  if (capturedImage.value) {
+    capturedImage.value = ''
+  } else {
+    const canvas = document.createElement('canvas');
+    canvas.width = video.value.videoWidth;
+    canvas.height = video.value.videoHeight;
+
+    const context = canvas.getContext('2d');
+    context.drawImage(video.value, 0, 0, canvas.width, canvas.height);
+
+    capturedImage.value = canvas.toDataURL('image/png');
+  }
+}
+
+const choosePicture = async () => {
+  file.value = await base64ToBlob(capturedImage.value)
+  storeAndSetImage(idx.value)
+  showOrHideCamera()
+}
+
+const handleOpenCamera = (index) => {
+  showOrHideCamera()
+  idx.value = index
+}
+
+const showOrHideCamera = () => {
+  enabled.value = !enabled.value
+  capturedImage.value = ''
+}
+
+watchEffect(() => {
+  if (video.value)
+    video.value.srcObject = stream.value
+})
 
 </script>
