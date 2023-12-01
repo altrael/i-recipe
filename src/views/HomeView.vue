@@ -1,7 +1,6 @@
 <template>
   <div class="">
-    <input type="checkbox" v-model="isSynthwave" class="toggle theme-controller" />
-    <div :class="{ 'synthwave-theme': isSynthwave }">
+    <div>
       <div class="daisy-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div class="daisy-card p-4">
           <p>

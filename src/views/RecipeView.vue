@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center">
+  <div class="flex items-center justify-center grow w-full h-full">
     <RecipeContent />
   </div>
 </template>
