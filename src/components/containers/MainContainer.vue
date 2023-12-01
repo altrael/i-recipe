@@ -32,7 +32,7 @@
 
     <div
       :class="rightContainer"
-      class="place-items-center flex items-center justify-center h-screen transition-all duration-150 ease-in"
+      class="place-items-center flex items-center justify-center h-screen w-full transition-all duration-150 ease-in"
     >
       <RouterView />
     </div>
