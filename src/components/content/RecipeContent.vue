@@ -107,7 +107,7 @@
 
 <script setup>
 import { onMounted, reactive, ref, watchEffect } from 'vue'
-import { useDevicesList, useUserMedia } from '@vueuse/core'
+import { useDevicesList, useUserMedia, useWebNotification } from '@vueuse/core'
 import { base64ToBlob } from "./../../utils/helper"
 import ListRecipe from './recipe/ListRecipe.vue'
 // import EmptyRecipe from './recipe/EmptyRecipe.vue'
@@ -181,8 +181,10 @@ const updateRecipe = async (id) => {
     body: JSON.stringify(data.value)
   })
 
-  toast(response.ok)
   updating.value = false
+
+  toast(response.ok)
+  pushNotification(`Successfully Update ${data.value.recipe_name}`)
 }
 
 const toast = (status) => {
@@ -360,7 +362,50 @@ watchEffect(() => {
 })
 
 
+const configurePushNotif = () => {
+	const broadcast = new BroadcastChannel('i-recipe-channel');
+	
+	broadcast.onmessage = (event) => {
+	  if (event.data && event.data.type === 'CRITICAL_SW_UPDATE') {
+	    const payload = event.data.payload;
+	    console.log(payload);
+	  }
+	};
+}
+
+const pushNotification = (msg) => {
+  const payload = {
+    title: 'I-Recipe',
+    body: msg,
+    dir: 'auto',
+    lang: 'en',
+    renotify: true,
+    tag: 'test',
+    vibrate: 1,
+    icon: "./../../../public/logo.svg"
+  }
+
+  const webnotif = useWebNotification(payload)
+  if (webnotif.isSupported) {
+    webnotif.show()
+
+    webnotif.onClick((evt => {
+      console.log("onclick")
+    }))
+    webnotif.onShow((evt => {
+      console.log("onshow")
+    }))
+    webnotif.onError((evt => {
+      console.log("onerror")
+    }))
+    webnotif.onClose((evt => {
+      console.log("onclose")
+    }))
+  }
+}
+
 onMounted( () => {
+  configurePushNotif()
   fetchData()
 })
 

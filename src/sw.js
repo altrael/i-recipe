@@ -1,19 +1,36 @@
+import { clientsClaim } from 'workbox-core';
 import { precacheAndRoute } from 'workbox-precaching'
 
-// self.__WB_MANIFEST is default injection point
+self.skipWaiting();
+
 precacheAndRoute(self.__WB_MANIFEST)
+
+const broadcast = new BroadcastChannel('i-recipe-channel');
 
 self.addEventListener('install', (event) => {
   console.log('Service Worker installed')
-  // ... other logic
 })
 
 self.addEventListener('activate', (event) => {
   console.log('Service Worker activated')
-  // ... other logic
 })
 
 self.addEventListener('fetch', (event) => {
   console.log('Service Worker fetching:', event.request.url)
-  // ... other logic
 })
+
+self.addEventListener("push", async (event) => {
+  console.log('event:', event.data.text());
+  console.log("push")
+
+  broadcast.postMessage({
+    type: 'CRITICAL_SW_UPDATE',
+    payload: {
+      version: '1.0.1',
+      details: 'This is a critical update. Please update your app.'
+    }
+   });
+
+});
+
+clientsClaim();
