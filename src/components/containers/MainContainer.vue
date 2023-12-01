@@ -7,7 +7,7 @@
     >
       <div class="flex flex-col items-center h-screen">
         <!-- Top Part -->
-        <div class="flex-grow flex items-end justify-center w-full h-[40%]" :class="textLogo">
+        <div class="flex-grow flex items-end justify-center w-full h-[40%] relative pe-16 md:pe-0" :class="textLogo">
           <img
             alt="Vue logo"
             class="logo"
@@ -16,7 +16,7 @@
             width="125"
             height="125"
           />
-          <h4 :class="{ textLogo, hidden: isHide }">ecipe</h4>
+          <p :class="{ textLogo, hidden: isHide }" class="absolute lg:text-red-400 right-12 lg:right-10 bottom-6 md:bottom-7 text-xl">ecipe</p>
         </div>
 
         <!-- Bottom Part -->
@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    <div class="divider xl:w-[5%] lg:divider-horizontal lg:w-[5%] h-screen md:h-screen sm:h-[5%]">
+    <div class="divider xl:w-[5%] lg:divider-horizontal lg:w-[5%] md:h-screen md:h-screen sm:h-[5%]">
       DIVIDER
     </div>
 
@@ -56,19 +56,17 @@ const router = useRouter()
 
 // Function to change the class
 router.beforeEach((to) => {
-  console.log(to.path)
   if (to.path == '/') {
-    console.log('true')
     leftContainer.value =
-      'xl:w-[40%] lg:w-[40%] md:h-[10%] sm:h-[10%] bg-white text-slate-950 text-base'
+      'xl:w-[40%] lg:w-[40%] md:h-[10%] sm:h-[10%] text-base'
     rightContainer.value = 'xl:w-[55%] lg:w-[55%]'
     textLogo.value = ''
     isHide.value = false
   } else {
     leftContainer.value =
-      'xl:w-[20%] lg:w-[20%] md:h-[10%] sm:h-[10%] bg-slate-950 text-white text-sm'
+      'xl:w-[20%] lg:w-[20%] md:h-[10%] sm:h-[10%] text-sm'
     rightContainer.value = 'xl:w-[90%] lg:w-[90%]'
-    navigation.value = ' text-slate-950'
+    navigation.value = ''
     isHide.value = true
   }
 })

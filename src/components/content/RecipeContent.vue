@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center justify-center w-full">
+  <div class="flex flex-col items-center md:justify-center mt-32 md:mt-0 w-full h-full">
     <div v-if="showToast" class="toast toast-top toast-end transition-opacity ease-in-out">
       <div v-if="success" class="alert alert-success">
         <span>Recipe Updated Successfully.</span>
@@ -36,11 +36,10 @@
     </dialog>
 
     <!-- FORM -->
-    <div v-if="!enabled" class="flex items-center justify-between mb-3 w-3/4">
-      <p class="text-lg font-bold">Recipe List</p>
-    </div>
-
-    <div class="flex flex-col justify-center items-center w-3/4">
+    <div v-if="!enabled" class="flex flex-col justify-center items-center w-3/4">
+      <div class="flex items-center justify-center mb-3 w-full">
+        <p class="text-lg font-bold">Recipe List</p>
+      </div>
       <div v-if="fetching">
         <span class="loading loading-ring loading-lg"></span>
       </div>
@@ -91,7 +90,7 @@
         </div>
         <div class="divider my-3"></div>
         <div class="flex justify-between">
-          <div class="dropdown dropdown-hover">
+          <div class="dropdown dropdown-hover dropdown-top">
             <div tabindex="0" role="button" class="btn btn-success">Add Steps</div>
             <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
               <li><a v-on:mousedown="addStep('text')">Add Step</a></li>
@@ -106,17 +105,21 @@
         </div>
       </div>
     </div>
+    <div v-if="!fetching" class="mt-12">
+      <button class="btn btn-circle dark:bg-gray-400 opacity-90" @click="scrollToTop">
+        <svg xmlns="http://www.w3.org/2000/svg" height="16" width="12" viewBox="0 0 384 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"/></svg>
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { onMounted, reactive, ref, watchEffect } from 'vue'
 import { useDevicesList, useUserMedia, useWebNotification } from '@vueuse/core'
-import { base64ToBlob } from "./../../utils/helper"
-import ListRecipe from './recipe/ListRecipe.vue'
-// import EmptyRecipe from './recipe/EmptyRecipe.vue'
-import AddRecipeModal from '@/components/modals/addRecipeModal.vue'
+import { base64ToBlob } from '@/utils/helper'
 
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const baseUrl = import.meta.env.VITE_API_MOCKAPI + '/recipes'
 const data = ref({
   recipe_name: '',
@@ -438,6 +441,14 @@ const pushNotification = (msg) => {
   }
 }
 
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+  router.push('/')
+}
+
 onMounted( () => {
   configurePushNotif()
   fetchData()
@@ -446,14 +457,4 @@ onMounted( () => {
 </script>
 
 <style scoped>
-/*.recipe-content {*/
-/*  */
-/*  width: 100%;*/
-/*}*/
-
-/*@media (min-width: 768px) {*/
-/*  .recipe-content {*/
-/*    min-width: 560px;*/
-/*  }*/
-/*}*/
 </style>
