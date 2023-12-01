@@ -8,5 +8,5 @@ defineProps({
 </script>
 
 <template>
-  <h1 class="green">{{ msg }}</h1>
+  <input type="checkbox" value="synthwave" class="toggle theme-controller" />
 </template>

@@ -1,18 +1,22 @@
 <template>
-  <GeoLocation />
-  <div class="flex flex-col w-full md:flex-row">
+  <div class="lg:flex lg:flex-row lg:w-full md:flex md:flex-col md:w-full" >
     <div
       :class="leftContainer"
-      class="place-items-center flex items-center justify-center h-screen transition-all duration-150 ease-in"
+      class="lg:place-items-center lg:flex lg:items-center lg:h-screen transition-all duration-150 ease-in"
     >
-      <div class="flex flex-col items-center h-screen">
+      <div
+        class="lg:flex lg:flex-col lg:items-center lg:h-screen md:flex md:flex-row md:items-center: md:place-content-center"
+      >
         <!-- Top Part -->
-        <div class="flex-grow flex items-end justify-center w-full h-[40%]" :class="textLogo">
+        <div
+          class="lg:flex-grow lg:flex lg:items-end lg:justify-center lg:w-full lg:h-[40%]"
+          :class="textLogo"
+        >
           <img
-            alt="Vue logo"
+            alt="I-Recipe Logo"
             class="logo"
             :class="logo"
-            src="@/assets/images/logo.svg"
+            src="@/assets/images/icons/i-recipe.svg"
             width="125"
             height="125"
           />
@@ -20,14 +24,16 @@
         </div>
 
         <!-- Bottom Part -->
-        <div class="flex w-full items-center justify-center h-[60%]" :class="navigation">
+        <div
+          class="lg:flex lg:w-full lg:items-center lg:flex-col lg:justify-center lg:h-[60%]"
+          :class="navigation"
+        >
           <NavigationContent />
+
+          <GeoLocation hidden: isHide/>
+          <Weather hidden: isHide/>
         </div>
       </div>
-    </div>
-
-    <div class="divider xl:w-[5%] lg:divider-horizontal lg:w-[5%] h-screen md:h-screen sm:h-[5%]">
-      DIVIDER
     </div>
 
     <div
@@ -37,13 +43,17 @@
       <RouterView />
     </div>
   </div>
+
+  <Footer />
 </template>
 
 <script setup>
 import { RouterView, useRouter } from 'vue-router'
-import NavigationContent from '../content/NavigationContent.vue'
 import { ref } from 'vue'
 import GeoLocation from '../utility/GeoLocation.vue'
+import Weather from '../utility/Weather.vue'
+import Footer from '../content/Footer.vue'
+import NavigationContent from '../content/navigation/NavigationContent.vue'
 
 const leftContainer = ref(null)
 const rightContainer = ref(null)
@@ -59,15 +69,13 @@ router.beforeEach((to) => {
   console.log(to.path)
   if (to.path == '/') {
     console.log('true')
-    leftContainer.value =
-      'xl:w-[40%] lg:w-[40%] md:h-[10%] sm:h-[10%] bg-white text-slate-950 text-base'
+    leftContainer.value = 'lg:w-[40%] md:h-[10%] bg-white text-slate-950 text-base'
     rightContainer.value = 'xl:w-[55%] lg:w-[55%]'
-    textLogo.value = ''
+    textLogo.value = 'lg: md:'
     isHide.value = false
   } else {
-    leftContainer.value =
-      'xl:w-[20%] lg:w-[20%] md:h-[10%] sm:h-[10%] bg-slate-950 text-white text-sm'
-    rightContainer.value = 'xl:w-[90%] lg:w-[90%]'
+    leftContainer.value = 'lg:w-[20%] md:h-[10%] bg-slate-950 text-white text-sm'
+    rightContainer.value = 'lg:w-[90%]'
     navigation.value = ' text-slate-950'
     isHide.value = true
   }
