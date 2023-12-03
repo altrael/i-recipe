@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center md:mt-32 mt-8 w-full h-full">
+  <div class="flex flex-col items-center md:pt-32 pt-8 w-full h-fit">
     <div v-if="showToast" class="toast toast-top toast-end transition-opacity ease-in-out">
       <div v-if="success" class="alert alert-success">
         <span>Recipe Updated Successfully.</span>

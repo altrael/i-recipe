@@ -1,49 +1,51 @@
 <template>
-  <div class="lg:flex lg:flex-row lg:w-full md:flex md:flex-col md:w-full" >
-    <div
-      :class="leftContainer"
-      class="lg:place-items-center lg:flex lg:items-center lg:h-screen transition-all duration-150 ease-in"
-    >
+  <div class="flex flex-col w-full h-fit">
+    <div class="lg:flex lg:flex-row lg:w-full md:flex md:flex-col md:w-full" >
       <div
-        class="lg:flex lg:flex-col lg:items-center lg:h-screen md:flex md:flex-row md:items-center: md:place-content-center"
+        :class="leftContainer"
+        class="lg:place-items-center lg:flex lg:items-center lg:h-screen transition-all duration-150 ease-in"
       >
-        <!-- Top Part -->
         <div
-          class="flex flex-row items-end"
-          :class="textLogo"
+          class="lg:flex lg:flex-col lg:items-center lg:h-screen md:flex md:flex-row md:items-center: md:place-content-center"
         >
-          <img
-            alt="I-Recipe Logo"
-            class="logo"
-            :class="logo"
-            src="@/assets/images/icons/i-recipe.svg"
-            width="125"
-            height="125"
-          />
-          <p :class="{ textLogo, hidden: isHide }" class="text-xl">ecipe</p>
-        </div>
+          <!-- Top Part -->
+          <div
+            class="flex flex-row items-end"
+            :class="textLogo"
+          >
+            <img
+              alt="I-Recipe Logo"
+              class="logo"
+              :class="logo"
+              src="@/assets/images/icons/i-recipe.svg"
+              width="125"
+              height="125"
+            />
+            <p :class="{ textLogo, hidden: isHide }" class="text-xl">ecipe</p>
+          </div>
 
-        <!-- Bottom Part -->
-        <div
-          class="lg:flex lg:w-full lg:items-center lg:flex-col lg:justify-center lg:h-[60%]"
-        >
-          <NavigationContent />
+          <!-- Bottom Part -->
+          <div
+            class="lg:flex lg:w-full lg:items-center lg:flex-col lg:justify-center lg:h-[60%]"
+          >
+            <NavigationContent />
 
-          <GeoLocation hidden: isHide/>
-          <Weather hidden: isHide/>
+            <GeoLocation hidden: isHide/>
+            <Weather hidden: isHide/>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div
-      :class="rightContainer"
-      class="place-items-center flex items-center justify-center h-screen w-full transition-all duration-150 ease-in"
-    >
-      <RouterView />
+      <div
+        :class="rightContainer"
+        class="place-items-center flex justify-center h-fit w-full transition-all duration-150 ease-in"
+      >
+        <RouterView />
+      </div>
     </div>
+    <Footer />
   </div>
 
-  <Footer />
 </template>
 
 <script setup>
